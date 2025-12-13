@@ -1,8 +1,11 @@
-# Vetradocs: AI-Powered Documentation Starter
+# VectraDocs: AI-Powered Documentation Starter
+
+[![npm version](https://img.shields.io/npm/v/vetradocs-vitepress.svg)](https://www.npmjs.com/package/vetradocs-vitepress)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A fast, modern documentation starter kit featuring a context-aware AI Assistant, similar to Mintlify, but open-source and self-hostable.
 
-Built with **Next.js 15**, **Fumadocs**, **LangChain**, and **Orama**.
+Built with **Next.js 16**, **Fumadocs**, **LangChain**, and **Orama**.
 
 ## 🚀 Features
 
@@ -14,9 +17,19 @@ Built with **Next.js 15**, **Fumadocs**, **LangChain**, and **Orama**.
   - **Code Copying**: One-click copy for AI-generated code snippets.
 - **🔌 Pluggable LLMs**: Switch between OpenAI, Ollama (Local), Anthropic, etc. via LangChain.
 
+## 📦 VitePress Plugin
+
+Using VitePress instead? We have a plugin for that!
+
+```bash
+npm install vetradocs-vitepress
+```
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-vitepress)**
+
 ## 🛠️ Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Docs Engine**: [Fumadocs](https://fumadocs.dev/)
 - **AI/LLM**: [LangChain.js](https://js.langchain.com/)
 - **Vector Search**: [Orama](https://askorama.ai/)
@@ -27,8 +40,8 @@ Built with **Next.js 15**, **Fumadocs**, **LangChain**, and **Orama**.
 1. **Clone & Install**:
 
    ```bash
-   git clone https://github.com/iotserver24/vetradocs.git
-   cd vetradocs
+   git clone https://github.com/iotserver24/VectraDocs.git
+   cd VectraDocs
    npm install
    ```
 
@@ -53,6 +66,10 @@ Built with **Next.js 15**, **Fumadocs**, **LangChain**, and **Orama**.
 ## 📖 Documentation
 
 Detailed documentation is available inside the app itself! Just run it and navigate to the docs, or ask the AI "How do I use this?".
+
+## 🌟 Credits
+
+Built by **[iotserver24](https://github.com/iotserver24)**
 
 ## 📄 License
 

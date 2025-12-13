@@ -3,7 +3,8 @@
 
 # generated content
 .source
-
+/public/search-index.json
+*/search-index.json
 # test & build
 /coverage
 /.next/
