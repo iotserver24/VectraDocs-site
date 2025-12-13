@@ -1,0 +1,83 @@
+---
+title: Installation
+description: How to set up and run the project locally
+---
+
+# Installation Guide
+
+Follow these steps to get your AI-powered documentation site up and running.
+
+## Prerequisites
+
+- **Node.js**: Version 18 or higher.
+- **Package Manager**: `npm`, `pnpm`, or `yarn`.
+- **LLM Provider**: An API key from OpenAI, or a local instance of Ollama.
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/iotserver24/vetradocs.git
+cd vetradocs
+```
+
+## 2. Install Dependencies
+
+Install the core dependencies for Next.js, Fumadocs, AI, and Markdown rendering:
+
+```bash
+npm install
+```
+
+This installs:
+- `fumadocs-core`, `fumadocs-ui`: Documentation framework.
+- `langchain`, `@langchain/openai`, `@langchain/core`: AI logic.
+- `@orama/orama`, `@orama/plugin-data-persistence`: Search engine.
+- `react-markdown`, `remark-gfm`: Chat markdown rendering.
+- `lucide-react`: Icons.
+
+## 3. Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+cp .env.example .env.local
+```
+
+Add your LLM details. 
+
+### Method A: Using OpenAI (Easiest)
+```bash
+LLM_BASE_URL="https://api.openai.com/v1"
+LLM_API_KEY="sk-..."
+LLM_MODEL="gpt-3.5-turbo"
+```
+
+### Method B: Using Local Ollama (Free & Private)
+1. Download [Ollama](https://ollama.com).
+2. Run a model: `ollama run llama3`.
+3. Configure `.env.local`:
+```bash
+LLM_BASE_URL="http://localhost:11434/v1"
+LLM_API_KEY="ollama" # Can be anything
+LLM_MODEL="llama3"
+```
+
+## 4. Build the Search Index
+
+The AI needs to "read" your documentation before it can answer questions. We use a custom script to generate an Orama search index.
+
+```bash
+npm run build:index
+```
+
+> **Note**: You must run this command whenever you add or edit `.mdx` content files, otherwise the AI won't know about the changes.
+
+## 5. Run the Development Server
+
+Start the app:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000`. You should see the "Ask AI" floating bar at the bottom of the screen!

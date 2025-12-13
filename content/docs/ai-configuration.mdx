@@ -1,0 +1,80 @@
+---
+title: AI Configuration
+description: Customizing the RAG pipeline, Prompts, and UI
+---
+
+# AI Configuration
+
+The AI logic is decoupled from the UI, making it easy to customize how the bot behaves and looks.
+
+## 1. Customizing the System Prompt
+
+The "personality" of your AI is defined in `app/api/chat/route.ts`. 
+
+Look for the `ChatPromptTemplate`:
+
+```typescript
+const prompt = ChatPromptTemplate.fromMessages([
+    ["system", `You are a helpful documentation assistant for "My Project".
+    Answer questions based on the provided documentation context.
+    
+    Context:
+    {context}
+    
+    If the answer is not in the context, apologize and say you don't know.`],
+    new MessagesPlaceholder("history"),
+    ["human", "{input}"],
+]);
+```
+
+**Tips**:
+- Change "My Project" to your actual product name.
+- Add rules like "Always provide code examples in TypeScript".
+- Restrict it from answering off-topic questions.
+
+## 2. Adjusting Search Precision
+
+The Retrieval-Augmented Generation (RAG) system uses Orama to find relevant docs. You can tune the retrieval in `app/api/chat/route.ts`:
+
+```typescript
+// Fetch top 3 most relevant sections
+const searchResult = await search(db, { term: lastMessage, limit: 3 });
+```
+
+- **`limit`**: Increase to `5` or `10` to give the AI more context (but higher token usage).
+- **`threshold`**: You can add a similarity threshold in Orama config if results are too loose.
+
+## 3. UI Customization
+
+The Frontend component lives in `components/ai-chat.tsx`. 
+
+### Styling with Tailwind
+We use standard Tailwind CSS classes.
+- **Floating Bar**: Look for the `fixed bottom-8` div.
+- **Sidebar**: Look for the `fixed inset-y-4 right-4` div.
+- **Colors**: Change `border-orange-500` or `bg-zinc-900` to match your brand.
+
+### Markdown Rendering
+We use `react-markdown` to render the AI's response. You can customize the `components` prop in the `<ReactMarkdown>` component to style specific elements like headings (`h1`), links (`a`), or code blocks (`code`).
+
+```tsx
+components={{
+    h1: ({children}) => <h1 className="text-xl font-bold">{children}</h1>,
+    // ...
+}}
+```
+
+## 4. Switching LLMs
+
+Since we use **LangChain**, switching providers is trivial.
+
+To use **Anthropic (Claude)**:
+1. Install: `npm install @langchain/anthropic`
+2. Update `route.ts`:
+   ```typescript
+   import { ChatAnthropic } from "@langchain/anthropic";
+   const model = new ChatAnthropic({ ... });
+   ```
+
+To use **Vector Databases** (Pinecone, Supabase):
+You would replace the local Orama index logic in `getOramaDB()` with a standard LangChain VectorStore retriever.

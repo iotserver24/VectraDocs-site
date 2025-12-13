@@ -1,45 +1,59 @@
-# .
+# Vetradocs: AI-Powered Documentation Starter
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+A fast, modern documentation starter kit featuring a context-aware AI Assistant, similar to Mintlify, but open-source and self-hostable.
 
-Run development server:
+Built with **Next.js 15**, **Fumadocs**, **LangChain**, and **Orama**.
 
-```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
-```
+## 🚀 Features
 
-Open http://localhost:3000 with your browser to see the result.
+- **🧠 Context-Aware AI Chat**: Queries your documentation to provide accurate, cited answers.
+- **⚡ Client-Side RAG**: Powered by [Orama](https://askorama.ai/), enabling instant search without heavy server costs.
+- **💬 Premium UI**:
+  - **Floating Action Bar**: "Ask AI" button that stays out of your way until needed.
+  - **Rich Markdown**: Renders code blocks, lists, and formatting perfectly.
+  - **Code Copying**: One-click copy for AI-generated code snippets.
+- **🔌 Pluggable LLMs**: Switch between OpenAI, Ollama (Local), Anthropic, etc. via LangChain.
 
-## Explore
+## 🛠️ Stack
 
-In the project, you can see:
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Docs Engine**: [Fumadocs](https://fumadocs.dev/)
+- **AI/LLM**: [LangChain.js](https://js.langchain.com/)
+- **Vector Search**: [Orama](https://askorama.ai/)
+- **Styling**: Tailwind CSS + Lucide React
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+## 📦 Getting Started
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+1. **Clone & Install**:
 
-### Fumadocs MDX
+   ```bash
+   git clone https://github.com/iotserver24/vetradocs.git
+   cd vetradocs
+   npm install
+   ```
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+2. **Configure Secrets**:
+   Create `.env.local`:
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+   ```env
+   LLM_BASE_URL="https://api.openai.com/v1"
+   LLM_API_KEY="sk-..."
+   LLM_MODEL="gpt-3.5-turbo"
+   ```
 
-## Learn More
+3. **Build Index & Run**:
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+   ```bash
+   npm run build:index
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+4. **Visit**: `http://localhost:3000`
+
+## 📖 Documentation
+
+Detailed documentation is available inside the app itself! Just run it and navigate to the docs, or ask the AI "How do I use this?".
+
+## 📄 License
+
+MIT
