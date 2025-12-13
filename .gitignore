@@ -5,6 +5,10 @@
 .source
 /public/search-index.json
 */search-index.json
+
+# separate package (has its own repo)
+/vetradocs-vitepress
+
 # test & build
 /coverage
 /.next/
