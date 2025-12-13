@@ -1,0 +1,67 @@
+---
+title: Scalar / Web Component
+description: Add AI chat to Scalar, HTML, or any generic website
+---
+
+# Scalar / Generic Web Component
+
+If you are using [Scalar](https://scalar.com/), plain HTML/JS, or any other framework, you can use our generic Web Component.
+
+## Installation
+
+```bash
+npm install vetradocs-scalar
+```
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-scalar)**
+
+## Quick Start
+
+### 1. Add Script
+
+Load the script in your HTML file (e.g., `index.html`):
+
+```html
+<script type="module" src="./node_modules/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
+```
+
+Or via CDN (once available via unpkg/jsdelivr).
+
+### 2. Add Component
+
+Add the custom element to your page structure:
+
+```html
+<vetradocs-widget 
+    api-endpoint="/api/chat"
+    index-path="/search-index.json"
+    title="Scalar AI"
+    accent-color="#8e4ec6"
+></vetradocs-widget>
+```
+
+### 3. Generate Index
+
+If you have Markdown files, use the included build script:
+
+```bash
+npx vetradocs-build-generic --docs ./docs --output ./public/search-index.json
+```
+
+If you are using Scalar with an OpenAPI spec, you will need to create a custom indexer to feed your API spec into the Orama search database, or manually create a markdown representation of your API for indexing.
+
+## Configuration Attributes
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `api-endpoint` | `/api/chat` | Chat API URL |
+| `index-path` | `/search-index.json` | Path to search index |
+| `title` | `AI Assistant` | Chat window title |
+| `accent-color` | `#f97316` | Main theme color |
+| `placeholder` | `Ask a question...` | Input placeholder |
+| `position` | `bottom-right` | `bottom-right`, `bottom-left`, `bottom-center` |
+
+## Links
+
+- **npm**: [vetradocs-scalar](https://www.npmjs.com/package/vetradocs-scalar)
+- **GitHub**: [VetraDocs-Scalar](https://github.com/iotserver24/VetraDocs-Scalar)

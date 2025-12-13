@@ -27,6 +27,24 @@ npm install vetradocs-vitepress
 
 **[View on npm →](https://www.npmjs.com/package/vetradocs-vitepress)**
 
+### Docusaurus Plugin
+
+```bash
+npm install vetradocs-docusaurus
+```
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-docusaurus)**
+
+### Scalar / Generic (Web Component)
+
+```bash
+npm install vetradocs-scalar
+```
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-scalar)**
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-vitepress)**
+
 ## 🛠️ Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)

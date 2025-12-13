@@ -6,8 +6,10 @@
 /public/search-index.json
 */search-index.json
 
-# separate package (has its own repo)
+# separate packages (have their own repos)
 /vetradocs-vitepress
+/vetradocs-scalar
+/vetradocs-docusaurus
 
 # test & build
 /coverage

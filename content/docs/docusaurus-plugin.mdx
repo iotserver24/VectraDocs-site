@@ -1,0 +1,84 @@
+---
+title: Docusaurus Plugin
+description: Add AI chat to your Docusaurus documentation site
+---
+
+# Docusaurus Plugin
+
+If you're using [Docusaurus](https://docusaurus.io/), we have a dedicated npm package that brings the AI chat experience to your docs.
+
+## Installation
+
+```bash
+npm install vetradocs-docusaurus
+```
+
+**[View on npm →](https://www.npmjs.com/package/vetradocs-docusaurus)**
+
+## Quick Start
+
+### 1. Add to your Theme
+
+You need to wrap your site with the `VetradocsChat` and `VetradocsFloatingBar` components. The easiest way is to Swizzle the `Layout` or `Root`.
+
+For example, using `src/theme/Root.js`:
+
+```jsx
+import React from 'react';
+import { VetradocsChat, VetradocsFloatingBar } from 'vetradocs-docusaurus';
+import 'vetradocs-docusaurus/dist/theme/VetradocsChat/styles.css';
+import 'vetradocs-docusaurus/dist/theme/VetradocsFloatingBar/styles.css';
+
+export default function Root({children}) {
+  return (
+    <>
+      {children}
+      <VetradocsFloatingBar />
+      <VetradocsChat />
+    </>
+  );
+}
+```
+
+### 2. Build the Search Index
+
+Add a script to your `package.json` to build the search index after your documentation is built.
+
+```json
+"scripts": {
+  "build": "docusaurus build && npx vetradocs-build-docusaurus"
+}
+```
+
+This will generate `static/search-index.json`.
+
+### 3. API Setup
+
+You need a backend to handle the chat requests. You can use the same backend as the main VectraDocs project or a Vercel Edge Function.
+
+## Configuration
+
+Pass props to the components to configure them.
+
+```jsx
+<VetradocsFloatingBar 
+    apiEndpoint="/api/your-chat-endpoint" 
+    title="My AI Docs" 
+    accentColor="#fa5252" 
+/>
+<VetradocsChat 
+    apiEndpoint="/api/your-chat-endpoint"
+/>
+```
+
+| Prop | Default | Description |
+|------|---------|-------------|
+| `apiEndpoint` | `/api/chat` | Endpoint for chat API |
+| `indexPath` | `/search-index.json` | Path to generated index |
+| `accentColor` | `#f97316` | Theme color |
+| `title` | `AI Assistant` | Title in chat header |
+
+## Links
+
+- **npm**: [vetradocs-docusaurus](https://www.npmjs.com/package/vetradocs-docusaurus)
+- **GitHub**: [VetraDocs-Docusaurus](https://github.com/iotserver24/VetraDocs-Docusaurus)
