@@ -37,23 +37,37 @@ export async function POST(req: Request) {
     // 2. RAG Retrieval
     const db = await getOramaDB();
     let context = "";
+    let sources: string[] = [];
     if (db) {
         const searchResult = await search(db, { term: lastMessage, limit: 3 });
         context = searchResult.hits
-            .map((h) => `Source: ${h.document.title}\nContent: ${h.document.content}`)
+            .map((h) => `Source: ${h.document.title} (${h.document.url})\nContent: ${h.document.content}`)
             .join("\n---\n");
+        sources = searchResult.hits.map((h) => `- [${h.document.title}](${h.document.url})`);
     }
 
     // 3. Prompt Template
-    // 3. Prompt Template
     const prompt = ChatPromptTemplate.fromMessages([
-        ["system", `You are a helpful documentation assistant for "Vetradocs".
-    Answer questions based on the provided documentation context.
+        ["system", `You are a helpful documentation assistant for "VectraDocs".
+    Answer questions based ONLY on the provided documentation context.
     
     Context:
     {context}
     
-    If the answer is not in the context, apologize and say you don't know based on the docs.`],
+    IMPORTANT RULES:
+    1. Only answer based on the provided context
+    2. If the answer is not in the context, apologize and say you don't have information about that
+    3. Be concise but helpful
+    4. Include code examples when relevant
+    5. At the END of your response, ALWAYS include a "📚 References" section with links to relevant documentation pages
+    6. Use the EXACT URLs from the context (they are relative paths like /docs/installation)
+    7. Format references as markdown links: [Page Title](/docs/page-path)
+    
+    Example reference section:
+    
+    📚 **References:**
+    - [Installation Guide](/docs/installation)
+    - [Backend Setup](/docs/backend-setup)`],
         new MessagesPlaceholder("history"),
         ["human", "{input}"],
     ]);

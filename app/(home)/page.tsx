@@ -132,7 +132,24 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 4. Tech Stack Marquee */}
+      {/* 4. Updates Section */}
+      <div className="w-full max-w-7xl mx-auto px-4 py-12 border-t border-zinc-900">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold text-zinc-100 mb-1">📋 Updates & Changelog</h3>
+            <p className="text-sm text-zinc-400">Stay up to date with the latest features and improvements.</p>
+          </div>
+          <Link
+            href="/updates"
+            className="flex items-center gap-2 px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-full text-sm font-medium transition-all"
+          >
+            View Changelog
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+      {/* 5. Tech Stack Marquee */}
       <div className="w-full border-t border-zinc-900 bg-zinc-950 py-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
           <span className="flex items-center gap-2 text-lg font-semibold"><Cpu className="w-5 h-5" /> Next.js 16</span>
