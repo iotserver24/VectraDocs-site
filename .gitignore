@@ -11,6 +11,7 @@
 /vetradocs-scalar
 /vetradocs-docusaurus
 /packages
+/template
 
 # test & build
 /coverage
