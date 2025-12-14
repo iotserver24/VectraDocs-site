@@ -33,7 +33,7 @@ export default function HomePage() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <Link
-            href="/docs/installation"
+            href="/docs"
             className="flex items-center gap-2 px-8 py-3.5 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-medium transition-all hover:scale-105 shadow-lg shadow-orange-600/20"
           >
             Get Started

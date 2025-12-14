@@ -1,89 +1,288 @@
 ---
 title: Scalar / Web Component
-description: Add AI chat to Scalar, HTML, or any generic website
+description: Add AI chat to Scalar, HTML, or any website using a Web Component
 ---
 
-# Scalar / Generic Web Component
+# Scalar / Web Component
 
-If you are using [Scalar](https://scalar.com/), plain HTML/JS, or any other framework, you can use our generic Web Component.
+Add an AI-powered chat assistant to **any website** using our framework-agnostic Web Component.
+
+{/* AI Context: vetradocs-scalar is an npm package that provides a LitElement Web Component called vetradocs-widget. It works with Scalar API docs, plain HTML, or any JavaScript framework. It requires a backend service to handle AI requests. */}
+
+<Callout title="Open Source" type="info">
+This component is **MIT licensed** and free to use.  
+[View on GitHub](https://github.com/iotserver24/VetraDocs-Scalar) · [npm package](https://www.npmjs.com/package/vetradocs-scalar)
+</Callout>
+
+---
+
+## Use Cases
+
+- **[Scalar](https://scalar.com/)** API documentation
+- Plain **HTML/CSS/JS** websites
+- **React**, **Vue**, **Svelte**, or any framework
+- Static site generators
+- Anywhere you can add a `<script>` tag
+
+---
 
 ## Installation
+
+### Via npm
 
 ```bash
 npm install vetradocs-scalar
 ```
 
-**[View on npm →](https://www.npmjs.com/package/vetradocs-scalar)**
+### Via CDN
 
-## Backend Setup
- 
-You strictly need a backend service to handle AI requests.
- 
-1.  Run the backend creator:
-    ```bash
-    npx create-vetradocs-backend@latest
-    ```
-2.  Choose **Cloudflare Workers** (Recommended) or Node.js.
-3.  Deploy and get your URL and API Key.
- 
-See [Backend Setup](./backend-setup) for a step-by-step guide.
- 
-Update your widget attributes with the backend URL and API Key:
- 
 ```html
-<vetradocs-widget 
-    api-endpoint="https://your-backend.com"
-    api-key="your-secret-api-key"
-></vetradocs-widget>
+<script type="module" src="https://unpkg.com/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
 ```
- 
+
+---
+
+## Prerequisites
+
+Before using this component, you need a backend service to handle AI requests.
+
+### Setting Up the Backend
+
+```bash
+npx create-vetradocs-backend@latest
+```
+
+Choose **Node.js (Express)** (recommended) or Cloudflare Workers, then deploy it.
+
+See [Backend Setup](/docs/backend-setup) for detailed instructions.
+
+{/* AI Context: The Scalar/Web Component requires a backend. Users should run npx create-vetradocs-backend@latest to scaffold the backend before using the component. */}
+
+---
+
 ## Quick Start
 
-### 1. Add Script
-
-Load the script in your HTML file (e.g., `index.html`):
+### Step 1: Add the Script
 
 ```html
+<!-- Via npm -->
 <script type="module" src="./node_modules/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
+
+<!-- Or via CDN -->
+<script type="module" src="https://unpkg.com/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
 ```
 
-Or via CDN (once available via unpkg/jsdelivr).
-
-### 2. Add Component
-
-Add the custom element to your page structure:
+### Step 2: Add the Component
 
 ```html
-<vetradocs-widget 
-    api-endpoint="/api/chat"
-    index-path="/search-index.json"
-    title="Scalar AI"
-    accent-color="#8e4ec6"
+<vetradocs-widget
+  api-endpoint="https://your-backend.com"
+  api-key="your-api-key"
+  title="AI Assistant"
+  accent-color="#f97316"
 ></vetradocs-widget>
 ```
 
-### 3. Generate Index
+### Step 3: Build the Search Index (Optional)
 
-If you have Markdown files, use the included build script:
+If you have Markdown documentation, build a search index:
 
 ```bash
 npx vetradocs-build-generic --docs ./docs --output ./public/search-index.json
 ```
 
-If you are using Scalar with an OpenAPI spec, you will need to create a custom indexer to feed your API spec into the Orama search database, or manually create a markdown representation of your API for indexing.
+Then point the widget to it:
 
-## Configuration Attributes
+```html
+<vetradocs-widget
+  index-path="/search-index.json"
+  ...
+></vetradocs-widget>
+```
 
-| Attribute | Default | Description |
-|-----------|---------|-------------|
-| `api-endpoint` | `/api/chat` | Chat API URL |
-| `index-path` | `/search-index.json` | Path to search index |
-| `title` | `AI Assistant` | Chat window title |
-| `accent-color` | `#f97316` | Main theme color |
-| `placeholder` | `Ask a question...` | Input placeholder |
-| `position` | `bottom-right` | `bottom-right`, `bottom-left`, `bottom-center` |
+{/* AI Context: The vetradocs-build-generic CLI scans markdown files and creates an Orama search index. This is optional for the Scalar component but enables better AI responses based on your documentation. */}
+
+---
+
+## Attributes Reference
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `api-endpoint` | `string` | `/api/chat` | Backend API URL |
+| `api-key` | `string` | `""` | API key for authentication |
+| `index-path` | `string` | `/search-index.json` | Path to search index |
+| `title` | `string` | `"AI Assistant"` | Chat window title |
+| `accent-color` | `string` | `"#f97316"` | Primary theme color (any CSS color) |
+| `placeholder` | `string` | `"Ask a question..."` | Input placeholder text |
+| `position` | `string` | `"bottom-right"` | `bottom-right`, `bottom-left`, `bottom-center` |
+
+{/* AI Context: The vetradocs-widget custom element accepts these HTML attributes for configuration. It renders a floating action button that opens a chat sidebar. */}
+
+---
+
+## Examples
+
+### Basic Usage
+
+```html
+<vetradocs-widget
+  api-endpoint="https://api.example.com"
+></vetradocs-widget>
+```
+
+### Full Configuration
+
+```html
+<vetradocs-widget
+  api-endpoint="https://api.example.com"
+  api-key="secret-key-123"
+  index-path="/search-index.json"
+  title="Documentation AI"
+  accent-color="#8b5cf6"
+  placeholder="What can I help you with?"
+  position="bottom-right"
+></vetradocs-widget>
+```
+
+### With Scalar API Docs
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My API Docs</title>
+  <script src="https://cdn.scalar.com/api-reference.js"></script>
+  <script type="module" src="https://unpkg.com/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
+</head>
+<body>
+  <!-- Scalar API Reference -->
+  <script data-url="https://api.example.com/openapi.json" id="api-reference"></script>
+  
+  <!-- VectraDocs AI Chat -->
+  <vetradocs-widget
+    api-endpoint="https://your-backend.com"
+    api-key="your-api-key"
+    title="API Assistant"
+    accent-color="#8e4ec6"
+  ></vetradocs-widget>
+</body>
+</html>
+```
+
+---
+
+## Framework Integration
+
+### React
+
+```jsx
+import 'vetradocs-scalar/dist/vetradocs-scalar.js';
+
+function App() {
+  return (
+    <div>
+      <vetradocs-widget
+        api-endpoint="https://api.example.com"
+        api-key="your-key"
+      ></vetradocs-widget>
+    </div>
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup>
+import 'vetradocs-scalar/dist/vetradocs-scalar.js';
+</script>
+
+<template>
+  <vetradocs-widget
+    api-endpoint="https://api.example.com"
+    api-key="your-key"
+  ></vetradocs-widget>
+</template>
+```
+
+### Plain HTML
+
+```html
+<script type="module" src="https://unpkg.com/vetradocs-scalar/dist/vetradocs-scalar.js"></script>
+<vetradocs-widget api-endpoint="https://api.example.com"></vetradocs-widget>
+```
+
+---
+
+## Styling
+
+### Custom Colors
+
+Use any CSS color value:
+
+```html
+<vetradocs-widget accent-color="#10b981"></vetradocs-widget>
+<vetradocs-widget accent-color="rgb(139, 92, 246)"></vetradocs-widget>
+<vetradocs-widget accent-color="hsl(262, 83%, 58%)"></vetradocs-widget>
+```
+
+### CSS Custom Properties
+
+Override internal styles using CSS:
+
+```css
+vetradocs-widget {
+  --vd-accent: #8b5cf6;
+  --vd-bg: #18181b;
+  --vd-text: #fafafa;
+}
+```
+
+---
+
+## CLI Reference
+
+### vetradocs-build-generic
+
+Builds a search index from Markdown files.
+
+```bash
+npx vetradocs-build-generic [options]
+
+Options:
+  --docs <path>     Path to docs directory (default: ./docs)
+  --output <path>   Output path for index (default: ./public/search-index.json)
+  --help            Show help
+```
+
+**Note:** If you're using Scalar with an OpenAPI spec, you may need to create a custom indexer or convert your API spec to markdown for optimal AI search.
+
+---
+
+## Troubleshooting
+
+### Widget doesn't appear
+
+1. Check browser console for JavaScript errors
+2. Ensure the script is loaded with `type="module"`
+3. Verify the `api-endpoint` is accessible
+
+### AI gives generic responses
+
+1. Create a search index from your documentation
+2. Point `index-path` to the generated JSON file
+3. Rebuild the index when content changes
+
+### CORS errors
+
+1. Check backend `FRONTEND_URL` matches your website
+2. Ensure you're using the correct protocol (http/https)
+
+---
 
 ## Links
 
 - **npm**: [vetradocs-scalar](https://www.npmjs.com/package/vetradocs-scalar)
-- **GitHub**: [VetraDocs-Scalar](https://github.com/iotserver24/VetraDocs-Scalar)
+- **CDN**: [unpkg.com/vetradocs-scalar](https://unpkg.com/vetradocs-scalar)
+- **GitHub**: [iotserver24/VetraDocs-Scalar](https://github.com/iotserver24/VetraDocs-Scalar)
+- **Main Project**: [iotserver24/VectraDocs](https://github.com/iotserver24/VectraDocs)

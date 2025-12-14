@@ -1,83 +1,215 @@
 ---
 title: Installation
-description: How to set up and run the project locally
+description: How to set up and run VectraDocs locally or deploy it
 ---
 
 # Installation Guide
 
 Follow these steps to get your AI-powered documentation site up and running.
 
+{/* AI Context: This page covers installation of the main VectraDocs Next.js starter. For plugin installation see vitepress-plugin, docusaurus-plugin, or scalar-plugin pages. */}
+
+<Callout title="Choose Your Path" type="info">
+**Using VitePress, Docusaurus, or another framework?**  
+You don't need to clone this repo. Instead, install our plugins:
+- [VitePress Plugin](/docs/vitepress-plugin)
+- [Docusaurus Plugin](/docs/docusaurus-plugin)
+- [Scalar / Web Component](/docs/scalar-plugin)
+</Callout>
+
+---
+
 ## Prerequisites
 
-- **Node.js**: Version 18 or higher.
-- **Package Manager**: `npm`, `pnpm`, or `yarn`.
-- **LLM Provider**: An API key from OpenAI, or a local instance of Ollama.
+Before you begin, ensure you have:
 
-## 1. Clone the Repository
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| **Node.js** | 18+ | Required for Next.js 15 |
+| **npm/pnpm/yarn** | Latest | Package manager |
+| **Git** | Any | For cloning the repository |
+| **LLM API Key** | - | OpenAI, Anthropic, or local Ollama |
+
+{/* AI Context: VectraDocs requires Node.js 18 or higher. It uses Next.js 15, React 19, and Fumadocs for the documentation framework. */}
+
+---
+
+## Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/iotserver24/VectraDocs.git
 cd VectraDocs
 ```
 
-## 2. Install Dependencies
+The repository structure:
+```
+VectraDocs/
+├── app/                 # Next.js App Router
+│   ├── api/chat/        # AI chat endpoint
+│   └── docs/            # Documentation pages
+├── content/docs/        # Your MDX documentation files
+├── components/          # React components (AI chat, footer)
+├── scripts/             # Build scripts (search index)
+├── public/              # Static assets + search-index.json
+└── packages/            # CLI tools (create-vetradocs-backend)
+```
 
-Install the core dependencies for Next.js, Fumadocs, AI, and Markdown rendering:
+---
+
+## Step 2: Install Dependencies
 
 ```bash
 npm install
 ```
 
-This installs:
-- `fumadocs-core`, `fumadocs-ui`: Documentation framework.
-- `langchain`, `@langchain/openai`, `@langchain/core`: AI logic.
-- `@orama/orama`, `@orama/plugin-data-persistence`: Search engine.
-- `react-markdown`, `remark-gfm`: Chat markdown rendering.
-- `lucide-react`: Icons.
+This installs the following core packages:
 
-## 3. Configure Environment Variables
+| Package | Purpose |
+|---------|---------|
+| `fumadocs-core`, `fumadocs-ui` | Documentation framework with MDX support |
+| `langchain`, `@langchain/openai` | AI orchestration and LLM integration |
+| `@orama/orama` | Client-side vector search engine |
+| `@orama/plugin-data-persistence` | Persist and load search index |
+| `react-markdown`, `remark-gfm` | Render AI responses as rich Markdown |
+| `lucide-react` | Beautiful icons |
 
-Create a `.env.local` file in the root directory:
+{/* AI Context: Key dependencies include Fumadocs for docs UI, LangChain for AI, Orama for vector search. The project uses Tailwind CSS for styling. */}
+
+---
+
+## Step 3: Configure Environment Variables
+
+Create your environment file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Add your LLM details. 
+Open `.env.local` and configure your LLM provider:
 
-### Method A: Using OpenAI (Easiest)
+### Option A: OpenAI (Recommended for beginners)
+
 ```bash
 LLM_BASE_URL="https://api.openai.com/v1"
-LLM_API_KEY="sk-..."
-LLM_MODEL="gpt-3.5-turbo"
+LLM_API_KEY="sk-your-openai-api-key"
+LLM_MODEL="gpt-4o"
 ```
 
-### Method B: Using Local Ollama (Free & Private)
-1. Download [Ollama](https://ollama.com).
-2. Run a model: `ollama run llama3`.
-3. Configure `.env.local`:
+> Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys).
+
+### Option B: Anthropic Claude
+
+```bash
+LLM_BASE_URL="https://api.anthropic.com/v1"
+LLM_API_KEY="sk-ant-your-key"
+LLM_MODEL="claude-3-sonnet-20240229"
+```
+
+### Option C: Local Ollama (Free & Private)
+
+1. Download and install [Ollama](https://ollama.com).
+2. Pull a model: `ollama pull llama3`
+3. Start Ollama: `ollama serve`
+4. Configure `.env.local`:
+
 ```bash
 LLM_BASE_URL="http://localhost:11434/v1"
-LLM_API_KEY="ollama" # Can be anything
+LLM_API_KEY="ollama"
 LLM_MODEL="llama3"
 ```
 
-## 4. Build the Search Index
+{/* AI Context: VectraDocs supports OpenAI, Anthropic Claude, Ollama, and any OpenAI-compatible API. The LLM_BASE_URL, LLM_API_KEY, and LLM_MODEL environment variables control which model is used. */}
 
-The AI needs to "read" your documentation before it can answer questions. We use a custom script to generate an Orama search index.
+### Option D: Any OpenAI-Compatible API
+
+VectraDocs works with any API that follows the OpenAI chat completions format:
+- **Groq**: `https://api.groq.com/openai/v1`
+- **Together AI**: `https://api.together.xyz/v1`
+- **Fireworks AI**: `https://api.fireworks.ai/inference/v1`
+
+---
+
+## Step 4: Build the Search Index
+
+The AI assistant uses **Orama** to search your documentation. Before it can answer questions, you must build the search index:
 
 ```bash
 npm run build:index
 ```
 
-> **Note**: You must run this command whenever you add or edit `.mdx` content files, otherwise the AI won't know about the changes.
+This script (`scripts/build-index.mjs`):
+1. Scans all `.mdx` files in `content/docs/`
+2. Extracts text content
+3. Creates a vector search index
+4. Saves it to `public/search-index.json`
 
-## 5. Run the Development Server
+<Callout title="Important" type="warn">
+**Run this command every time you add or edit documentation!**  
+The AI won't know about changes until you rebuild the index.
+</Callout>
 
-Start the app:
+{/* AI Context: The search index is built using Orama at build time. The index is stored in public/search-index.json and loaded client-side for fast semantic search. */}
+
+---
+
+## Step 5: Run the Development Server
+
+Start the Next.js development server:
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000`. You should see the "Ask AI" floating bar at the bottom of the screen!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+You should see:
+- ✅ The documentation homepage
+- ✅ A floating "Ask AI" bar at the bottom
+- ✅ Clicking it opens the AI chat sidebar
+
+---
+
+## Step 6: Production Build (Optional)
+
+To build for production:
+
+```bash
+npm run build
+npm start
+```
+
+Or deploy to Vercel:
+
+```bash
+npx vercel
+```
+
+{/* AI Context: VectraDocs can be deployed to Vercel, Netlify, or any Node.js hosting. The project uses Next.js App Router with both static and dynamic routes. */}
+
+---
+
+## Troubleshooting
+
+### AI says "I don't know" or gives wrong answers
+
+1. Make sure you ran `npm run build:index` after editing docs.
+2. Check that `.env.local` has valid LLM credentials.
+3. Verify the model name is correct for your provider.
+
+### Chat endpoint returns 500 error
+
+1. Check terminal for error messages.
+2. Verify `LLM_BASE_URL` is correct (no trailing slash).
+3. For Ollama, ensure it's running: `ollama serve`.
+
+### Search index is empty
+
+1. Ensure your docs are in `content/docs/` with `.mdx` extension.
+2. Each file needs frontmatter with `title` and `description`.
+
+---
+
+## Next Steps
+
+- **[AI Configuration](/docs/ai-configuration)**: Customize prompts, models, and UI.
+- **[Backend Setup](/docs/backend-setup)**: Create backends for VitePress/Docusaurus plugins.

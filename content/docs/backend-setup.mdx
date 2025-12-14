@@ -1,114 +1,263 @@
 ---
 title: Backend Setup
-description: Setting up the AI backend for Vetradocs plugins
+description: Create an AI backend for VectraDocs plugins using our CLI tool
 ---
 
 # Backend Setup
 
-The Vetradocs frontend plugins (VitePress, Docusaurus, Scalar) require a backend service to handle AI model communication and search context processing.
+The VectraDocs frontend plugins (**VitePress**, **Docusaurus**, **Scalar**) require a backend service to communicate with AI models. This page shows you how to create one in seconds using our CLI.
 
-We provide a streamlined CLI tool to help you set up this backend in seconds.
+{/* AI Context: This page covers the create-vetradocs-backend CLI tool. It creates either a Node.js/Express backend or a Cloudflare Workers backend for handling AI chat requests. The backend receives messages from the frontend, sends them to an LLM, and streams responses back. */}
+
+<Callout title="Why do I need a backend?" type="info">
+The frontend plugins run in the browser and cannot securely store API keys. A backend:
+1. **Keeps your API keys safe** (never exposed to users)
+2. **Handles CORS** (allows your docs site to connect)
+3. **Streams responses** (for real-time AI output)
+</Callout>
+
+---
 
 ## Quick Start
 
-Run the following command in your terminal:
+Run this command in your terminal:
 
 ```bash
 npx create-vetradocs-backend@latest
 ```
 
-This interactive tool will ask you to choose between two backend types:
+The CLI will guide you through:
 
-1.  **Node.js (Recommended)**: A standard Node.js server using Express.js.
-    *   **Pros**: Runs anywhere (Vercel, Railway, VPS), flexible, supports any LLM SDK (OpenAI, Anthropic, etc).
-    *   **Cons**: Requires managing your own API keys.
-2.  **Cloudflare Workers**: Uses Cloudflare Workers AI.
-    *   **Pros**: Serverless, free tier for Llama models.
-    *   **Cons**: Limited to models supported by Cloudflare.
+1. **Select backend type**: Node.js (Express) or Cloudflare Workers
+2. **Enter project name**: e.g., `my-docs-backend`
+3. **Configure Frontend URL**: For CORS (e.g., `http://localhost:5173`)
+4. **Generate API Key**: Auto-generates a secure key for you
 
-## Options
-
-### 1. Node.js (Express) - Recommended
-
-This is a standard server that acts as a secure proxy to OpenAI, Anthropic, or local LLMs.
-
-**Prerequisites:**
-- Node.js installed.
-- An API Key from an LLM provider (e.g., OpenAI, Anthropic).
-
-**Setup:**
-1.  Run `npx create-vetradocs-backend@latest` and select "Node.js (Express)".
-2.  Navigate to the created folder: `cd chat-backend`
-3.  Install dependencies: `npm install`
-4.  **Configure Environment**:
-    - The CLI will help generate your key, or rename `.env.example` to `.env`.
-    - `LLM_API_KEY`: Paste your OpenAI/Provider Key.
-    - `API_KEY`: Create a secret password for your frontend.
-    - `FRONTEND_URL`: Your docs URL (e.g., `http://localhost:5173`).
-5.  **Start Server**: `npm run dev` (local) or `npm start` (prod).
-
-Your server will be running at `http://localhost:3000`.
+{/* AI Context: The create-vetradocs-backend CLI is published on npm. Running npx create-vetradocs-backend@latest will scaffold either a Node.js Express server or a Cloudflare Workers project. It auto-generates an API key and configures environment variables. */}
 
 ---
 
-### 2. Cloudflare Workers
+## Backend Options
 
-This backend leverages **Cloudflare Workers AI** to run models like Llama 3 directly on Cloudflare's global network.
+### Option 1: Node.js (Express) — Recommended
+
+A standard Node.js server that proxies requests to any OpenAI-compatible API.
+
+**Best for:**
+- Full control over the LLM provider
+- Deploying to Vercel, Railway, Render, or your own VPS
+- Using OpenAI, Anthropic, Groq, Together AI, or local Ollama
 
 **Prerequisites:**
-- A [Cloudflare](https://www.cloudflare.com/) account.
-- `wrangler` CLI installed (`npm install -g wrangler`).
+- Node.js 18+
+- An API key from your LLM provider
 
-**Setup:**
-1.  Run `npx create-vetradocs-backend@latest` and select "Cloudflare Workers".
-2.  Navigate to the created folder: `cd chat-workers`
-3.  Install dependencies: `npm install`
-4.  **Login to Cloudflare**: `npx wrangler login`
-5.  **Deploy**: `npm run deploy`
+**Step-by-step Setup:**
 
-Your worker will be deployed to `https://<project-name>.<your-subdomain>.workers.dev`. COPY this URL.
+```bash
+# 1. Create the backend
+npx create-vetradocs-backend@latest
+# Select "Node.js (Express)" and enter a project name
 
-**Configuration:**
-In `wrangler.toml` (or via Cloudflare Dashboard > Settings > Variables):
-- `API_KEY`: Set a strong secret password. You will need this for the frontend.
-- `FRONTEND_URL`: The URL of your documentation site (e.g., `https://my-docs.com`).
-- `AI_MODEL`: (Optional) The model to use, defaults to `@cf/meta/llama-3-8b-instruct`.
+# 2. Navigate to the project
+cd chat-backend
 
+# 3. Install dependencies
+npm install
 
+# 4. Configure environment
+# The CLI already created .env with your API_KEY.
+# Now add your LLM provider credentials:
+```
+
+Edit `.env`:
+
+```bash
+PORT=3000
+FRONTEND_URL=http://localhost:5173
+API_KEY=auto-generated-key-here
+
+# Add your LLM provider:
+LLM_BASE_URL=https://api.openai.com/v1
+LLM_API_KEY=sk-your-openai-key
+LLM_MODEL=gpt-4o
+```
+
+**Start the server:**
+
+```bash
+npm run dev    # Development with auto-reload
+npm start      # Production
+```
+
+Your backend is now running at `http://localhost:3000`.
+
+{/* AI Context: The Node.js backend uses Express.js with cors, dotenv, and the openai npm package. It has a /api/chat POST endpoint that requires Authorization header with Bearer token. It streams responses back to the client. */}
 
 ---
 
-## Connecting Frontend
+### Option 2: Cloudflare Workers
 
-Now that you have your Backend URL and API Key, configure your documentation site.
+A serverless backend that runs on Cloudflare's edge network using Workers AI.
+
+**Best for:**
+- Zero infrastructure management
+- Free tier (Llama 3 models are free)
+- Global low-latency responses
+
+**Prerequisites:**
+- A [Cloudflare account](https://cloudflare.com)
+- `wrangler` CLI: `npm install -g wrangler`
+
+**Step-by-step Setup:**
+
+```bash
+# 1. Create the backend
+npx create-vetradocs-backend@latest
+# Select "Cloudflare Workers" and enter a project name
+
+# 2. Navigate to the project
+cd chat-workers
+
+# 3. Install dependencies
+npm install
+
+# 4. Login to Cloudflare
+npx wrangler login
+
+# 5. Deploy
+npm run deploy
+```
+
+Your worker will be deployed to a URL like:
+```
+https://chat-workers.your-username.workers.dev
+```
+
+**Configure secrets** (via Cloudflare Dashboard > Settings > Variables):
+
+| Variable | Description |
+|----------|-------------|
+| `API_KEY` | Secret key for frontend authentication |
+| `FRONTEND_URL` | Your docs URL for CORS (e.g., `https://docs.example.com`) |
+| `AI_MODEL` | Model to use (default: `@cf/meta/llama-3-8b-instruct`) |
+
+{/* AI Context: The Cloudflare Workers backend uses Workers AI binding to run Llama 3 or other models. It's configured in wrangler.toml. The worker handles CORS, validates the API key, and streams the AI response. */}
+
+---
+
+## Environment Variables Reference
+
+### Node.js Backend
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PORT` | No | Server port (default: 3000) |
+| `FRONTEND_URL` | Yes | Your docs site URL for CORS |
+| `API_KEY` | Yes | Secret key the frontend uses to authenticate |
+| `LLM_BASE_URL` | Yes | LLM provider endpoint (e.g., `https://api.openai.com/v1`) |
+| `LLM_API_KEY` | Yes | Your LLM provider API key |
+| `LLM_MODEL` | Yes | Model name (e.g., `gpt-4o`, `claude-3-sonnet`) |
+
+### Cloudflare Workers Backend
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `API_KEY` | Yes | Secret key for authentication |
+| `FRONTEND_URL` | Yes | Your docs site URL for CORS |
+| `AI_MODEL` | No | Cloudflare AI model (default: `@cf/meta/llama-3-8b-instruct`) |
+
+---
+
+## Connecting Your Frontend
+
+Once your backend is deployed, configure your frontend to use it.
 
 ### VitePress Plugin
 
-In your VitePress project's `.env` file:
+Add to your `.env` file in the VitePress project root:
 
 ```bash
-VITE_VETRADOCS_BACKEND_URL=https://your-backend-url.com
-VITE_VETRADOCS_API_KEY=your-secret-api-key
+VITE_VETRADOCS_BACKEND_URL=https://your-backend.com
+VITE_VETRADOCS_API_KEY=your-generated-api-key
 ```
 
 ### Docusaurus Plugin
 
-Pass the configuration via props in your `Root.js` or wherever you implemented the plugin:
+Pass props to the component in `src/theme/Root.js`:
 
 ```jsx
 <VetradocsChat 
-  apiEndpoint="https://your-backend-url.com"
-  apiKey="your-secret-api-key"
+  apiEndpoint="https://your-backend.com"
+  apiKey="your-generated-api-key"
+/>
+<VetradocsFloatingBar 
+  apiEndpoint="https://your-backend.com"
+  apiKey="your-generated-api-key"
 />
 ```
 
 ### Scalar / Web Component
 
-Pass the attributes to the custom element:
+Add attributes to the custom element:
 
 ```html
 <vetradocs-widget
-  api-endpoint="https://your-backend-url.com"
-  api-key="your-secret-api-key"
+  api-endpoint="https://your-backend.com"
+  api-key="your-generated-api-key"
 ></vetradocs-widget>
 ```
+
+{/* AI Context: Frontend plugins send requests to the backend's /api/chat endpoint with Authorization: Bearer <API_KEY> header. The request body contains messages array. The backend streams the response. */}
+
+---
+
+## Security Best Practices
+
+1. **Use strong API keys**: The CLI generates secure random keys. Never use simple passwords.
+2. **Set FRONTEND_URL correctly**: This prevents other websites from using your backend.
+3. **Use HTTPS in production**: Always deploy your backend with SSL.
+4. **Keep LLM keys secret**: Never expose `LLM_API_KEY` to the frontend.
+
+---
+
+## Deployment Options
+
+### Node.js Backend
+
+| Platform | Command | Notes |
+|----------|---------|-------|
+| **Vercel** | `npx vercel` | Automatic HTTPS, free tier |
+| **Railway** | Connect GitHub repo | Easy deploys |
+| **Render** | Connect GitHub repo | Free tier available |
+| **VPS** | `npm start` with PM2 | Full control |
+
+### Cloudflare Workers
+
+Already deployed globally when you run `npm run deploy`. No additional steps needed.
+
+---
+
+## Troubleshooting
+
+### CORS Errors
+
+Check that `FRONTEND_URL` matches your docs site URL exactly (including `http://` or `https://`).
+
+### 401 Unauthorized
+
+Verify the `API_KEY` in your backend matches what you configured in the frontend.
+
+### AI responses are empty
+
+1. Check backend logs for errors
+2. Verify `LLM_API_KEY` is valid
+3. Ensure `LLM_BASE_URL` has no trailing slash
+
+---
+
+## Next Steps
+
+- **[VitePress Plugin](/docs/vitepress-plugin)**: Add AI chat to VitePress
+- **[Docusaurus Plugin](/docs/docusaurus-plugin)**: Add AI chat to Docusaurus
+- **[Scalar Plugin](/docs/scalar-plugin)**: Add AI chat to any website

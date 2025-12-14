@@ -5,7 +5,16 @@ description: Add AI chat to your VitePress documentation site
 
 # VitePress Plugin
 
-If you're using [VitePress](https://vitepress.dev/) instead of Next.js/Fumadocs, we have a dedicated npm package that brings the same AI chat experience to your VitePress docs.
+Add an AI-powered chat assistant to your [VitePress](https://vitepress.dev/) documentation site in minutes.
+
+{/* AI Context: vetradocs-vitepress is an npm package that provides Vue 3 components (VetradocsChat, VetradocsFloatingBar) and a composable (useVetradocs) for VitePress sites. It requires a backend service to handle AI requests. */}
+
+<Callout title="Open Source" type="info">
+This plugin is **MIT licensed** and free to use.  
+[View on GitHub](https://github.com/iotserver24/vetradocs-vitepress) · [npm package](https://www.npmjs.com/package/vetradocs-vitepress)
+</Callout>
+
+---
 
 ## Installation
 
@@ -13,53 +22,49 @@ If you're using [VitePress](https://vitepress.dev/) instead of Next.js/Fumadocs,
 npm install vetradocs-vitepress
 ```
 
-**[View on npm →](https://www.npmjs.com/package/vetradocs-vitepress)**
+---
 
-## Backend Setup
- 
-To handle AI requests, you strictly need a backend service. We provide a CLI to set up Cloudflare Workers (Recommeded) or Node.js backend.
- 
-1. Run the backend creator:
- 
+## Prerequisites
+
+Before using this plugin, you need:
+
+1. **A VitePress site** (v1.0+)
+2. **A backend service** to handle AI requests
+
+### Setting Up the Backend
+
+Run our CLI to create a backend:
+
 ```bash
 npx create-vetradocs-backend@latest
 ```
- 
-2. Follow the prompts to create your backend.
-3. Deploy it and copy the URL and API Key.
- 
-See [Backend Setup](./backend-setup) for a step-by-step guide.
 
-**Configure Environment Variables**
+Choose **Node.js (Express)** (recommended) or Cloudflare Workers, then deploy it.
 
-Add these to your `.env` file in the root of your VitePress project:
+See [Backend Setup](/docs/backend-setup) for detailed instructions.
+
+{/* AI Context: The VitePress plugin requires a backend. Users should run npx create-vetradocs-backend@latest to scaffold the backend before using the plugin. */}
+
+---
+
+## Configuration
+
+After deploying your backend, add these environment variables to your VitePress project:
+
+Create `.env` in your VitePress root:
 
 ```bash
 VITE_VETRADOCS_BACKEND_URL=https://your-backend-url.com
-VITE_VETRADOCS_API_KEY=your-secure-api-key
+VITE_VETRADOCS_API_KEY=your-generated-api-key
 ```
+
+> The plugin automatically reads these variables. No additional configuration needed!
+
+---
 
 ## Quick Start
 
-### 1. Add to your VitePress theme
-
-Create or edit `.vitepress/theme/index.ts`:
-
-```ts
-import DefaultTheme from 'vitepress/theme';
-import { VetradocsChat, VetradocsFloatingBar } from 'vetradocs-vitepress/theme';
-
-export default {
-  extends: DefaultTheme,
-  enhanceApp({ app }) {
-    // Register the components globally
-    app.component('VetradocsChat', VetradocsChat);
-    app.component('VetradocsFloatingBar', VetradocsFloatingBar);
-  },
-};
-```
-
-### 2. Add to your layout
+### Step 1: Create a Custom Layout
 
 Create `.vitepress/theme/Layout.vue`:
 
@@ -75,11 +80,10 @@ const { Layout } = DefaultTheme;
   <Layout>
     <template #layout-bottom>
       <VetradocsFloatingBar 
-        api-endpoint="/api/chat"
         accent-color="#f97316"
+        placeholder="Ask AI about the docs..."
       />
       <VetradocsChat 
-        api-endpoint="/api/chat"
         title="AI Assistant"
         accent-color="#f97316"
       />
@@ -88,6 +92,8 @@ const { Layout } = DefaultTheme;
 </template>
 ```
 
+### Step 2: Register the Layout
+
 Update `.vitepress/theme/index.ts`:
 
 ```ts
@@ -95,17 +101,19 @@ import Layout from './Layout.vue';
 
 export default {
   Layout,
-  // ... rest of config
+  // ... other theme config
 };
 ```
 
-### 3. Build the search index
+### Step 3: Build the Search Index
+
+The AI needs to "read" your documentation. Build the search index:
 
 ```bash
 npx vetradocs-build --docs ./docs --output ./docs/public/search-index.json
 ```
 
-Add this to your `package.json` scripts:
+Add this to your `package.json`:
 
 ```json
 {
@@ -116,42 +124,54 @@ Add this to your `package.json` scripts:
 }
 ```
 
-## Configuration
+{/* AI Context: The vetradocs-build CLI scans markdown files in the docs directory and creates an Orama search index at public/search-index.json. This index is loaded client-side for semantic search. */}
 
-### VetradocsFloatingBar Props
+---
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `apiEndpoint` | `string` | `/api/chat` | Chat API endpoint |
-| `indexPath` | `string` | `/search-index.json` | Path to search index |
-| `placeholder` | `string` | `Ask a question...` | Input placeholder |
-| `accentColor` | `string` | `#f97316` | Primary color |
-| `position` | `string` | `bottom-center` | `bottom-center`, `bottom-right`, `bottom-left` |
+## Component Reference
 
-### VetradocsChat Props
+### VetradocsFloatingBar
+
+The floating input bar at the bottom of the screen.
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `apiEndpoint` | `string` | `/api/chat` | Chat API endpoint |
-| `indexPath` | `string` | `/search-index.json` | Path to search index |
-| `title` | `string` | `AI Assistant` | Sidebar title |
-| `accentColor` | `string` | `#f97316` | Primary color |
+| `placeholder` | `string` | `"Ask a question..."` | Input placeholder text |
+| `accentColor` | `string` | `"#f97316"` | Primary theme color |
+| `position` | `string` | `"bottom-center"` | Position: `bottom-center`, `bottom-right`, `bottom-left` |
+| `shortcut` | `string` | `"i"` | Keyboard shortcut to focus (Ctrl/Cmd + key) |
+
+### VetradocsChat
+
+The slide-out chat sidebar.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | `"AI Assistant"` | Title in the chat header |
+| `accentColor` | `string` | `"#f97316"` | Primary theme color |
+
+{/* AI Context: VetradocsFloatingBar is the input field at the bottom. VetradocsChat is the sidebar that opens when you ask a question. Both components share state via the useVetradocs composable. */}
+
+---
 
 ## Composable API
 
-For custom implementations:
+For custom implementations, use the `useVetradocs` composable:
 
 ```ts
 import { useVetradocs } from 'vetradocs-vitepress';
 
 const {
-  isOpen,       // Ref<boolean> - Chat open state
+  // State
+  isOpen,       // Ref<boolean> - Chat sidebar open state
   messages,     // Ref<Message[]> - Chat history
-  input,        // Ref<string> - Current input
-  loading,      // Ref<boolean> - Loading state
+  input,        // Ref<string> - Current input value
+  loading,      // Ref<boolean> - Whether AI is responding
+  
+  // Actions
   sendMessage,  // (text: string) => Promise<void>
-  clearChat,    // () => void
-  toggleChat,   // () => void
+  clearChat,    // () => void - Clear all messages
+  toggleChat,   // () => void - Open/close sidebar
   searchDocs,   // (query: string) => Promise<SearchResult[]>
 } = useVetradocs({
   apiEndpoint: '/api/chat',
@@ -159,7 +179,36 @@ const {
 });
 ```
 
-## CLI Options
+### Message Type
+
+```ts
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+```
+
+### SearchResult Type
+
+```ts
+interface SearchResult {
+  id: string;
+  title: string;
+  content: string;
+  path: string;
+  score: number;
+}
+```
+
+{/* AI Context: The useVetradocs composable provides reactive state for the chat UI. It handles loading the Orama search index, searching documents, and sending messages to the backend API. */}
+
+---
+
+## CLI Reference
+
+### vetradocs-build
+
+Builds the search index for your documentation.
 
 ```bash
 npx vetradocs-build [options]
@@ -167,11 +216,65 @@ npx vetradocs-build [options]
 Options:
   --docs <path>     Path to docs directory (default: ./docs)
   --output <path>   Output path for index (default: ./docs/public/search-index.json)
+  --help            Show help
 ```
+
+**Example:**
+
+```bash
+npx vetradocs-build --docs ./src/docs --output ./public/search-index.json
+```
+
+---
+
+## Styling & Theming
+
+### Custom Accent Color
+
+Pass a CSS color to the `accentColor` prop:
+
+```vue
+<VetradocsFloatingBar accent-color="#8b5cf6" />
+<VetradocsChat accent-color="#8b5cf6" />
+```
+
+### CSS Variables
+
+You can override styles using CSS:
+
+```css
+/* In your custom CSS */
+.vetradocs-floating-bar {
+  --vd-accent: #8b5cf6;
+  --vd-bg: #18181b;
+  --vd-text: #fafafa;
+}
+```
+
+---
+
+## Troubleshooting
+
+### Chat doesn't open
+
+1. Check browser console for errors
+2. Verify the search index exists at `/search-index.json`
+3. Ensure components are in the `#layout-bottom` slot
+
+### AI says "I don't know"
+
+1. Rebuild the search index: `npx vetradocs-build`
+2. Check that your backend is running
+3. Verify environment variables are set
+
+### CORS errors
+
+Ensure your backend's `FRONTEND_URL` matches your VitePress dev server URL.
+
+---
 
 ## Links
 
-- **npm**: [https://www.npmjs.com/package/vetradocs-vitepress](https://www.npmjs.com/package/vetradocs-vitepress)
-- **VitePress Plugin Code**: [https://github.com/iotserver24/vetradocs-vitepress](https://github.com/iotserver24/vetradocs-vitepress)
-- **Main VectraDocs Project**: [https://github.com/iotserver24/VectraDocs](https://github.com/iotserver24/VectraDocs)
-
+- **npm**: [vetradocs-vitepress](https://www.npmjs.com/package/vetradocs-vitepress)
+- **GitHub**: [iotserver24/vetradocs-vitepress](https://github.com/iotserver24/vetradocs-vitepress)
+- **Main Project**: [iotserver24/VectraDocs](https://github.com/iotserver24/VectraDocs)

@@ -1,84 +1,292 @@
 ---
 title: AI Configuration
-description: Customizing the RAG pipeline, Prompts, and UI
+description: Customize the RAG pipeline, system prompts, search settings, and UI
 ---
 
 # AI Configuration
 
-The AI logic is decoupled from the UI, making it easy to customize how the bot behaves and looks.
+This page covers how to customize the AI behavior in **VectraDocs**. The AI is built on **LangChain** and uses **Orama** for client-side vector search.
 
-> **Note**: This page documents configuring the **Next.js** backend built into this starter.
-> If you are using **VitePress**, **Docusaurus**, or **Scalar**, you are likely using an external backend (Cloudflare Workers or Express).
-> See [Backend Setup](./backend-setup) for configuring those.
+{/* AI Context: This page covers AI customization for the main VectraDocs Next.js starter. It explains how to modify the system prompt, adjust search settings, change LLM providers, and customize the chat UI. */}
+
+<Callout title="Which Version Are You Using?" type="info">
+**This page is for the main VectraDocs Next.js starter.**
+
+If you're using **VitePress**, **Docusaurus**, or **Scalar** plugins with an external backend, see [Backend Setup](/docs/backend-setup) instead.
+</Callout>
+
+---
+
+## How It Works
+
+VectraDocs uses **Retrieval-Augmented Generation (RAG)**:
+
+1. **User asks a question** → The frontend sends the message to `/api/chat`
+2. **Search relevant docs** → Orama searches the documentation index
+3. **Build context** → The top results are combined into a context string
+4. **Generate response** → LangChain sends the question + context to the LLM
+5. **Stream response** → The AI's answer is streamed back to the user
+
+{/* AI Context: VectraDocs uses RAG (Retrieval-Augmented Generation). The Orama search index is built at build time from MDX files. At runtime, user questions trigger a search, and the top results are injected into the LLM prompt as context. */}
+
+---
 
 ## 1. Customizing the System Prompt
 
-The "personality" of your AI is defined in `app/api/chat/route.ts`. 
+The AI's "personality" is defined in `app/api/chat/route.ts`.
 
-Look for the `ChatPromptTemplate`:
+Find the `ChatPromptTemplate`:
 
 ```typescript
 const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `You are a helpful documentation assistant for "My Project".
+    ["system", `You are a helpful documentation assistant for "VectraDocs".
     Answer questions based on the provided documentation context.
     
     Context:
     {context}
     
-    If the answer is not in the context, apologize and say you don't know.`],
+    Rules:
+    - Only answer based on the provided context
+    - If the answer is not in the context, say "I don't have information about that"
+    - Be concise but helpful
+    - Include code examples when relevant`],
     new MessagesPlaceholder("history"),
     ["human", "{input}"],
 ]);
 ```
 
-**Tips**:
-- Change "My Project" to your actual product name.
-- Add rules like "Always provide code examples in TypeScript".
-- Restrict it from answering off-topic questions.
+### Customization Ideas
 
-## 2. Adjusting Search Precision
+| Goal | Prompt Addition |
+|------|-----------------|
+| Brand voice | `"You represent the ExampleCo brand. Be friendly and professional."` |
+| Code language | `"Always provide code examples in TypeScript."` |
+| Restrict topics | `"Only answer questions about our product. Decline unrelated questions."` |
+| Response length | `"Keep responses under 200 words unless code is needed."` |
+| Include sources | `"At the end, list the documentation pages you referenced."` |
 
-The Retrieval-Augmented Generation (RAG) system uses Orama to find relevant docs. You can tune the retrieval in `app/api/chat/route.ts`:
+{/* AI Context: The system prompt controls how the AI behaves. It's defined in app/api/chat/route.ts using LangChain's ChatPromptTemplate. The {context} placeholder is replaced with search results at runtime. */}
+
+---
+
+## 2. Adjusting Search Settings
+
+The RAG system uses **Orama** to find relevant documentation. You can tune this in `app/api/chat/route.ts`:
 
 ```typescript
-// Fetch top 3 most relevant sections
-const searchResult = await search(db, { term: lastMessage, limit: 3 });
+// Search for relevant documents
+const searchResult = await search(db, { 
+  term: lastMessage, 
+  limit: 3  // Number of results to include
+});
 ```
 
-- **`limit`**: Increase to `5` or `10` to give the AI more context (but higher token usage).
-- **`threshold`**: You can add a similarity threshold in Orama config if results are too loose.
+### Settings
 
-## 3. UI Customization
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `limit` | `3` | Number of doc sections to include in context |
+| `tolerance` | `0.5` | Fuzzy matching tolerance (0-1) |
+| `threshold` | `0` | Minimum score to include a result |
 
-The Frontend component lives in `components/ai-chat.tsx`. 
+### Recommendations
 
-### Styling with Tailwind
-We use standard Tailwind CSS classes.
-- **Floating Bar**: Look for the `fixed bottom-8` div.
-- **Sidebar**: Look for the `fixed inset-y-4 right-4` div.
-- **Colors**: Change `border-orange-500` or `bg-zinc-900` to match your brand.
+- **Simple docs**: `limit: 3` is usually enough
+- **Complex docs**: Increase to `limit: 5-10`
+- **Token budget concerns**: Keep `limit` low, use summaries
+- **Accuracy issues**: Increase `limit` and add `threshold: 0.3`
 
-### Markdown Rendering
-We use `react-markdown` to render the AI's response. You can customize the `components` prop in the `<ReactMarkdown>` component to style specific elements like headings (`h1`), links (`a`), or code blocks (`code`).
+{/* AI Context: Orama search is configured with limit (number of results), tolerance (fuzzy matching), and threshold (minimum score). Higher limits give more context but use more tokens. */}
+
+---
+
+## 3. Switching LLM Providers
+
+VectraDocs uses environment variables to configure the LLM:
+
+```bash
+LLM_BASE_URL="https://api.openai.com/v1"
+LLM_API_KEY="sk-..."
+LLM_MODEL="gpt-4o"
+```
+
+### Supported Providers
+
+| Provider | Base URL | Models |
+|----------|----------|--------|
+| **OpenAI** | `https://api.openai.com/v1` | `gpt-4o`, `gpt-4o-mini`, `gpt-3.5-turbo` |
+| **Anthropic** | `https://api.anthropic.com/v1` | `claude-3-sonnet`, `claude-3-opus` |
+| **Groq** | `https://api.groq.com/openai/v1` | `llama-3.1-70b-versatile` |
+| **Together AI** | `https://api.together.xyz/v1` | `meta-llama/Llama-3-70b-chat` |
+| **Ollama** | `http://localhost:11434/v1` | `llama3`, `mistral`, etc. |
+
+### Using Anthropic (Claude)
+
+For deeper Claude integration:
+
+```bash
+npm install @langchain/anthropic
+```
+
+Update `app/api/chat/route.ts`:
+
+```typescript
+import { ChatAnthropic } from "@langchain/anthropic";
+
+const model = new ChatAnthropic({
+  model: "claude-3-sonnet-20240229",
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+```
+
+{/* AI Context: VectraDocs supports any OpenAI-compatible API via LLM_BASE_URL. For Anthropic Claude, install @langchain/anthropic package and update the model initialization. */}
+
+---
+
+## 4. UI Customization
+
+The chat UI lives in `components/ai-chat.tsx`.
+
+### Accent Color
+
+Change the primary color throughout the component:
 
 ```tsx
-components={{
-    h1: ({children}) => <h1 className="text-xl font-bold">{children}</h1>,
-    // ...
-}}
+// Find and replace occurrences of:
+border-orange-500  →  border-purple-500
+bg-orange-500      →  bg-purple-500
+text-orange-500    →  text-purple-500
 ```
 
-## 4. Switching LLMs
+### Floating Bar Position
 
-Since we use **LangChain**, switching providers is trivial.
+Modify the position in the floating bar styles:
 
-To use **Anthropic (Claude)**:
-1. Install: `npm install @langchain/anthropic`
-2. Update `route.ts`:
-   ```typescript
-   import { ChatAnthropic } from "@langchain/anthropic";
-   const model = new ChatAnthropic({ ... });
-   ```
+```tsx
+// Bottom center (default)
+className="fixed bottom-8 left-1/2 -translate-x-1/2"
 
-To use **Vector Databases** (Pinecone, Supabase):
-You would replace the local Orama index logic in `getOramaDB()` with a standard LangChain VectorStore retriever.
+// Bottom right
+className="fixed bottom-8 right-8"
+
+// Bottom left
+className="fixed bottom-8 left-8"
+```
+
+### Markdown Rendering
+
+Customize how AI responses render:
+
+```tsx
+<ReactMarkdown
+  components={{
+    h1: ({ children }) => <h1 className="text-2xl font-bold mt-4">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-xl font-semibold mt-3">{children}</h2>,
+    code: ({ children }) => (
+      <code className="bg-zinc-800 px-1.5 py-0.5 rounded text-orange-400">
+        {children}
+      </code>
+    ),
+    a: ({ href, children }) => (
+      <a href={href} className="text-orange-500 hover:underline">
+        {children}
+      </a>
+    ),
+  }}
+>
+  {message.content}
+</ReactMarkdown>
+```
+
+{/* AI Context: UI customization is done in components/ai-chat.tsx. The component uses Tailwind CSS. ReactMarkdown renders the AI responses with customizable element styling. */}
+
+---
+
+## 5. Adding Hidden AI Context
+
+You can add hidden metadata in your MDX files that the AI can search but users won't see:
+
+```mdx
+---
+title: My Page
+description: A page about something
+---
+
+# My Page
+
+{/* AI Context: This page covers X, Y, and Z. Related topics include A and B. Common questions: How do I...? What is...? */}
+
+Visible content here...
+```
+
+This is powered by MDX comments (`{/* ... */}`) which are:
+- ✅ Indexed by the search system
+- ✅ Available to the AI as context
+- ❌ Not rendered to users
+
+{/* AI Context: MDX comments with "AI Context:" prefix are a way to add extra information for the AI without displaying it to users. The search index includes all text content including comments. */}
+
+---
+
+## 6. Using Vector Databases
+
+For larger documentation sites, you might want to use a cloud vector database:
+
+### Pinecone
+
+```bash
+npm install @pinecone-database/pinecone @langchain/pinecone
+```
+
+```typescript
+import { Pinecone } from "@pinecone-database/pinecone";
+import { PineconeStore } from "@langchain/pinecone";
+
+const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+const index = pinecone.Index("your-index");
+
+const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+  pineconeIndex: index,
+});
+
+const retriever = vectorStore.asRetriever({ k: 5 });
+```
+
+### Supabase
+
+```bash
+npm install @supabase/supabase-js @langchain/community
+```
+
+Check LangChain docs for Supabase vector store integration.
+
+{/* AI Context: VectraDocs defaults to Orama for client-side search. For larger sites, Pinecone or Supabase can be used as cloud vector databases with LangChain retrievers. */}
+
+---
+
+## Troubleshooting
+
+### AI gives generic or wrong answers
+
+1. Check that `npm run build:index` was run after editing docs
+2. Increase `limit` in search settings
+3. Add more specific content to your documentation
+
+### AI takes too long to respond
+
+1. Use a faster model (`gpt-4o-mini` vs `gpt-4o`)
+2. Reduce `limit` in search settings
+3. Use a local model with Ollama
+
+### AI refuses to answer valid questions
+
+1. The answer might not be in your docs - add it!
+2. Adjust the system prompt to be less restrictive
+3. Check if the question matches indexed content
+
+---
+
+## Next Steps
+
+- **[Installation](/docs/installation)**: Set up VectraDocs
+- **[Backend Setup](/docs/backend-setup)**: Create backends for plugins

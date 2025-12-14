@@ -5,7 +5,16 @@ description: Add AI chat to your Docusaurus documentation site
 
 # Docusaurus Plugin
 
-If you're using [Docusaurus](https://docusaurus.io/), we have a dedicated npm package that brings the AI chat experience to your docs.
+Add an AI-powered chat assistant to your [Docusaurus](https://docusaurus.io/) documentation site.
+
+{/* AI Context: vetradocs-docusaurus is an npm package that provides React components (VetradocsChat, VetradocsFloatingBar) and a hook (useVetradocs) for Docusaurus sites. It requires a backend service to handle AI requests. */}
+
+<Callout title="Open Source" type="info">
+This plugin is **MIT licensed** and free to use.  
+[View on GitHub](https://github.com/iotserver24/VetraDocs-Docusaurus) · [npm package](https://www.npmjs.com/package/vetradocs-docusaurus)
+</Callout>
+
+---
 
 ## Installation
 
@@ -13,90 +22,234 @@ If you're using [Docusaurus](https://docusaurus.io/), we have a dedicated npm pa
 npm install vetradocs-docusaurus
 ```
 
-**[View on npm →](https://www.npmjs.com/package/vetradocs-docusaurus)**
+---
+
+## Prerequisites
+
+Before using this plugin, you need:
+
+1. **A Docusaurus site** (v2.0+ or v3.0+)
+2. **A backend service** to handle AI requests
+
+### Setting Up the Backend
+
+Run our CLI to create a backend:
+
+```bash
+npx create-vetradocs-backend@latest
+```
+
+Choose **Node.js (Express)** (recommended) or Cloudflare Workers, then deploy it.
+
+See [Backend Setup](/docs/backend-setup) for detailed instructions.
+
+{/* AI Context: The Docusaurus plugin requires a backend. Users should run npx create-vetradocs-backend@latest to scaffold the backend before using the plugin. */}
+
+---
 
 ## Quick Start
 
-### 1. Add to your Theme
+### Step 1: Create Root Component
 
-You need to wrap your site with the `VetradocsChat` and `VetradocsFloatingBar` components. The easiest way is to Swizzle the `Layout` or `Root`.
-
-For example, using `src/theme/Root.js`:
+Swizzle the Root component or create `src/theme/Root.js`:
 
 ```jsx
 import React from 'react';
 import { VetradocsChat, VetradocsFloatingBar } from 'vetradocs-docusaurus';
+
+// Import styles
 import 'vetradocs-docusaurus/dist/theme/VetradocsChat/styles.css';
 import 'vetradocs-docusaurus/dist/theme/VetradocsFloatingBar/styles.css';
 
-export default function Root({children}) {
+export default function Root({ children }) {
   return (
     <>
       {children}
-      <VetradocsFloatingBar />
-      <VetradocsChat />
+      <VetradocsFloatingBar 
+        apiEndpoint="https://your-backend.com"
+        apiKey="your-api-key"
+        accentColor="#f97316"
+      />
+      <VetradocsChat 
+        apiEndpoint="https://your-backend.com"
+        apiKey="your-api-key"
+        title="AI Assistant"
+        accentColor="#f97316"
+      />
     </>
   );
 }
 ```
 
-### 2. Build the Search Index
+### Step 2: Build the Search Index
 
-Add a script to your `package.json` to build the search index after your documentation is built.
+Add a post-build script to generate the search index:
 
 ```json
-"scripts": {
-  "build": "docusaurus build && npx vetradocs-build-docusaurus"
+{
+  "scripts": {
+    "build": "docusaurus build && npx vetradocs-build-docusaurus",
+    "build:index": "vetradocs-build-docusaurus"
+  }
 }
 ```
 
-This will generate `static/search-index.json`.
+This creates `static/search-index.json`.
 
-### 3. Backend Setup
+{/* AI Context: The vetradocs-build-docusaurus CLI scans the Docusaurus build output and creates an Orama search index at static/search-index.json. This index is loaded client-side. */}
 
-You strictly need a backend service to handle AI requests. We provide a CLI to handle this.
+---
 
-1.  Run the backend creator:
-    ```bash
-    npx create-vetradocs-backend@latest
-    ```
-2.  Choose **Cloudflare Workers** (Recommended) or Node.js.
-3.  Deploy and get your URL and API Key.
+## Component Reference
 
-See [Backend Setup](./backend-setup) for a step-by-step guide.
+### VetradocsFloatingBar
 
-Once set up, update your configuration in your Docusaurus theme:
+The floating input bar at the bottom of the screen.
 
-```jsx
-<VetradocsChat 
-    apiEndpoint="https://your-backend.com"
-    apiKey="your-secret-api-key"
-/>
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `apiEndpoint` | `string` | `/api/chat` | Backend API URL |
+| `apiKey` | `string` | `""` | API key for authentication |
+| `indexPath` | `string` | `/search-index.json` | Path to search index |
+| `placeholder` | `string` | `"Ask a question..."` | Input placeholder |
+| `accentColor` | `string` | `"#f97316"` | Primary theme color |
+| `position` | `string` | `"bottom-center"` | `bottom-center`, `bottom-right`, `bottom-left` |
+
+### VetradocsChat
+
+The slide-out chat sidebar.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `apiEndpoint` | `string` | `/api/chat` | Backend API URL |
+| `apiKey` | `string` | `""` | API key for authentication |
+| `indexPath` | `string` | `/search-index.json` | Path to search index |
+| `title` | `string` | `"AI Assistant"` | Title in chat header |
+| `accentColor` | `string` | `"#f97316"` | Primary theme color |
+
+{/* AI Context: VetradocsFloatingBar is the input component. VetradocsChat is the sidebar. Both need apiEndpoint and apiKey props to communicate with the backend. */}
+
+---
+
+## Hook API
+
+For custom implementations, use the `useVetradocs` hook:
+
+```tsx
+import { useVetradocs } from 'vetradocs-docusaurus';
+
+function MyComponent() {
+  const {
+    // State
+    isOpen,       // boolean - Chat sidebar open state
+    messages,     // Message[] - Chat history
+    input,        // string - Current input value
+    loading,      // boolean - Whether AI is responding
+    
+    // Actions
+    sendMessage,  // (text: string) => Promise<void>
+    clearChat,    // () => void
+    toggleChat,   // () => void
+    setInput,     // (value: string) => void
+  } = useVetradocs({
+    apiEndpoint: 'https://your-backend.com',
+    apiKey: 'your-api-key',
+    indexPath: '/search-index.json',
+  });
+
+  return (
+    <button onClick={() => sendMessage('Hello!')}>
+      Ask AI
+    </button>
+  );
+}
 ```
 
-## Configuration
+{/* AI Context: The useVetradocs hook provides state and actions for building custom chat UIs in Docusaurus. It handles API communication and search index loading. */}
 
-Pass props to the components to configure them.
+---
+
+## Configuration Examples
+
+### Minimal Setup
+
+```jsx
+<VetradocsFloatingBar apiEndpoint="https://api.example.com" />
+<VetradocsChat apiEndpoint="https://api.example.com" />
+```
+
+### Full Configuration
 
 ```jsx
 <VetradocsFloatingBar 
-    apiEndpoint="/api/your-chat-endpoint" 
-    title="My AI Docs" 
-    accentColor="#fa5252" 
+  apiEndpoint="https://api.example.com"
+  apiKey="secret-key-123"
+  indexPath="/search-index.json"
+  placeholder="What would you like to know?"
+  accentColor="#8b5cf6"
+  position="bottom-right"
 />
 <VetradocsChat 
-    apiEndpoint="/api/your-chat-endpoint"
+  apiEndpoint="https://api.example.com"
+  apiKey="secret-key-123"
+  indexPath="/search-index.json"
+  title="Documentation AI"
+  accentColor="#8b5cf6"
 />
 ```
 
-| Prop | Default | Description |
-|------|---------|-------------|
-| `apiEndpoint` | `/api/chat` | Endpoint for chat API |
-| `indexPath` | `/search-index.json` | Path to generated index |
-| `accentColor` | `#f97316` | Theme color |
-| `title` | `AI Assistant` | Title in chat header |
+---
+
+## Styling
+
+### Custom Accent Color
+
+Use any CSS color:
+
+```jsx
+<VetradocsFloatingBar accentColor="#10b981" />
+<VetradocsChat accentColor="#10b981" />
+```
+
+### Custom CSS
+
+Override styles in your `custom.css`:
+
+```css
+.vetradocs-floating-bar {
+  /* Customize the floating bar */
+}
+
+.vetradocs-chat-sidebar {
+  /* Customize the chat sidebar */
+}
+```
+
+---
+
+## Troubleshooting
+
+### Components don't appear
+
+1. Ensure styles are imported
+2. Check that `Root.js` is in `src/theme/`
+3. Restart the dev server
+
+### AI says "I don't know"
+
+1. Rebuild the search index
+2. Verify your backend is running
+3. Check `apiEndpoint` points to the correct URL
+
+### CORS errors
+
+1. Ensure backend `FRONTEND_URL` matches your Docusaurus URL
+2. Include protocol (`http://` or `https://`)
+
+---
 
 ## Links
 
 - **npm**: [vetradocs-docusaurus](https://www.npmjs.com/package/vetradocs-docusaurus)
-- **GitHub**: [VetraDocs-Docusaurus](https://github.com/iotserver24/VetraDocs-Docusaurus)
+- **GitHub**: [iotserver24/VetraDocs-Docusaurus](https://github.com/iotserver24/VetraDocs-Docusaurus)
+- **Main Project**: [iotserver24/VectraDocs](https://github.com/iotserver24/VectraDocs)
