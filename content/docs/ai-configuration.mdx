@@ -7,6 +7,10 @@ description: Customizing the RAG pipeline, Prompts, and UI
 
 The AI logic is decoupled from the UI, making it easy to customize how the bot behaves and looks.
 
+> **Note**: This page documents configuring the **Next.js** backend built into this starter.
+> If you are using **VitePress**, **Docusaurus**, or **Scalar**, you are likely using an external backend (Cloudflare Workers or Express).
+> See [Backend Setup](./backend-setup) for configuring those.
+
 ## 1. Customizing the System Prompt
 
 The "personality" of your AI is defined in `app/api/chat/route.ts`. 

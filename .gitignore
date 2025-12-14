@@ -10,6 +10,7 @@
 /vetradocs-vitepress
 /vetradocs-scalar
 /vetradocs-docusaurus
+/packages
 
 # test & build
 /coverage

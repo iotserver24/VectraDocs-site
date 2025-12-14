@@ -15,6 +15,28 @@ npm install vetradocs-scalar
 
 **[View on npm →](https://www.npmjs.com/package/vetradocs-scalar)**
 
+## Backend Setup
+ 
+You strictly need a backend service to handle AI requests.
+ 
+1.  Run the backend creator:
+    ```bash
+    npx create-vetradocs-backend@latest
+    ```
+2.  Choose **Cloudflare Workers** (Recommended) or Node.js.
+3.  Deploy and get your URL and API Key.
+ 
+See [Backend Setup](./backend-setup) for a step-by-step guide.
+ 
+Update your widget attributes with the backend URL and API Key:
+ 
+```html
+<vetradocs-widget 
+    api-endpoint="https://your-backend.com"
+    api-key="your-secret-api-key"
+></vetradocs-widget>
+```
+ 
 ## Quick Start
 
 ### 1. Add Script

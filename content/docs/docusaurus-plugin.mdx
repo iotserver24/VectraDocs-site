@@ -52,9 +52,27 @@ Add a script to your `package.json` to build the search index after your documen
 
 This will generate `static/search-index.json`.
 
-### 3. API Setup
+### 3. Backend Setup
 
-You need a backend to handle the chat requests. You can use the same backend as the main VectraDocs project or a Vercel Edge Function.
+You strictly need a backend service to handle AI requests. We provide a CLI to handle this.
+
+1.  Run the backend creator:
+    ```bash
+    npx create-vetradocs-backend@latest
+    ```
+2.  Choose **Cloudflare Workers** (Recommended) or Node.js.
+3.  Deploy and get your URL and API Key.
+
+See [Backend Setup](./backend-setup) for a step-by-step guide.
+
+Once set up, update your configuration in your Docusaurus theme:
+
+```jsx
+<VetradocsChat 
+    apiEndpoint="https://your-backend.com"
+    apiKey="your-secret-api-key"
+/>
+```
 
 ## Configuration
 

@@ -1,0 +1,114 @@
+---
+title: Backend Setup
+description: Setting up the AI backend for Vetradocs plugins
+---
+
+# Backend Setup
+
+The Vetradocs frontend plugins (VitePress, Docusaurus, Scalar) require a backend service to handle AI model communication and search context processing.
+
+We provide a streamlined CLI tool to help you set up this backend in seconds.
+
+## Quick Start
+
+Run the following command in your terminal:
+
+```bash
+npx create-vetradocs-backend@latest
+```
+
+This interactive tool will ask you to choose between two backend types:
+
+1.  **Node.js (Recommended)**: A standard Node.js server using Express.js.
+    *   **Pros**: Runs anywhere (Vercel, Railway, VPS), flexible, supports any LLM SDK (OpenAI, Anthropic, etc).
+    *   **Cons**: Requires managing your own API keys.
+2.  **Cloudflare Workers**: Uses Cloudflare Workers AI.
+    *   **Pros**: Serverless, free tier for Llama models.
+    *   **Cons**: Limited to models supported by Cloudflare.
+
+## Options
+
+### 1. Node.js (Express) - Recommended
+
+This is a standard server that acts as a secure proxy to OpenAI, Anthropic, or local LLMs.
+
+**Prerequisites:**
+- Node.js installed.
+- An API Key from an LLM provider (e.g., OpenAI, Anthropic).
+
+**Setup:**
+1.  Run `npx create-vetradocs-backend@latest` and select "Node.js (Express)".
+2.  Navigate to the created folder: `cd chat-backend`
+3.  Install dependencies: `npm install`
+4.  **Configure Environment**:
+    - The CLI will help generate your key, or rename `.env.example` to `.env`.
+    - `LLM_API_KEY`: Paste your OpenAI/Provider Key.
+    - `API_KEY`: Create a secret password for your frontend.
+    - `FRONTEND_URL`: Your docs URL (e.g., `http://localhost:5173`).
+5.  **Start Server**: `npm run dev` (local) or `npm start` (prod).
+
+Your server will be running at `http://localhost:3000`.
+
+---
+
+### 2. Cloudflare Workers
+
+This backend leverages **Cloudflare Workers AI** to run models like Llama 3 directly on Cloudflare's global network.
+
+**Prerequisites:**
+- A [Cloudflare](https://www.cloudflare.com/) account.
+- `wrangler` CLI installed (`npm install -g wrangler`).
+
+**Setup:**
+1.  Run `npx create-vetradocs-backend@latest` and select "Cloudflare Workers".
+2.  Navigate to the created folder: `cd chat-workers`
+3.  Install dependencies: `npm install`
+4.  **Login to Cloudflare**: `npx wrangler login`
+5.  **Deploy**: `npm run deploy`
+
+Your worker will be deployed to `https://<project-name>.<your-subdomain>.workers.dev`. COPY this URL.
+
+**Configuration:**
+In `wrangler.toml` (or via Cloudflare Dashboard > Settings > Variables):
+- `API_KEY`: Set a strong secret password. You will need this for the frontend.
+- `FRONTEND_URL`: The URL of your documentation site (e.g., `https://my-docs.com`).
+- `AI_MODEL`: (Optional) The model to use, defaults to `@cf/meta/llama-3-8b-instruct`.
+
+
+
+---
+
+## Connecting Frontend
+
+Now that you have your Backend URL and API Key, configure your documentation site.
+
+### VitePress Plugin
+
+In your VitePress project's `.env` file:
+
+```bash
+VITE_VETRADOCS_BACKEND_URL=https://your-backend-url.com
+VITE_VETRADOCS_API_KEY=your-secret-api-key
+```
+
+### Docusaurus Plugin
+
+Pass the configuration via props in your `Root.js` or wherever you implemented the plugin:
+
+```jsx
+<VetradocsChat 
+  apiEndpoint="https://your-backend-url.com"
+  apiKey="your-secret-api-key"
+/>
+```
+
+### Scalar / Web Component
+
+Pass the attributes to the custom element:
+
+```html
+<vetradocs-widget
+  api-endpoint="https://your-backend-url.com"
+  api-key="your-secret-api-key"
+></vetradocs-widget>
+```

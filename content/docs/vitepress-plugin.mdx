@@ -15,6 +15,30 @@ npm install vetradocs-vitepress
 
 **[View on npm →](https://www.npmjs.com/package/vetradocs-vitepress)**
 
+## Backend Setup
+ 
+To handle AI requests, you strictly need a backend service. We provide a CLI to set up Cloudflare Workers (Recommeded) or Node.js backend.
+ 
+1. Run the backend creator:
+ 
+```bash
+npx create-vetradocs-backend@latest
+```
+ 
+2. Follow the prompts to create your backend.
+3. Deploy it and copy the URL and API Key.
+ 
+See [Backend Setup](./backend-setup) for a step-by-step guide.
+
+**Configure Environment Variables**
+
+Add these to your `.env` file in the root of your VitePress project:
+
+```bash
+VITE_VETRADOCS_BACKEND_URL=https://your-backend-url.com
+VITE_VETRADOCS_API_KEY=your-secure-api-key
+```
+
 ## Quick Start
 
 ### 1. Add to your VitePress theme
