@@ -182,11 +182,22 @@ function useScrollAnimation() {
 
         };
 
-        window.addEventListener('scroll', handleScroll);
+        // Use requestAnimationFrame for smoother scroll handling
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener('scroll', onScroll);
         handleScroll();
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('scroll', onScroll);
         };
     }, []);
 
