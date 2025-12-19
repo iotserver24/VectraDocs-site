@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'iotserver24', url: 'https://github.com/iotserver24' }],
   creator: 'iotserver24',
   publisher: 'iotserver24',
-  metadataBase: new URL('https://vectradocs.vercel.app'), // Replace with your actual deployment URL
+  metadataBase: new URL('https://vectra-docs.xibe.app'),
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://vectradocs.vercel.app',
+    url: 'https://vectra-docs.xibe.app',
     title: 'VectraDocs - AI-Powered Documentation',
     description: 'AI-powered documentation that chats back. Transform your static docs into interactive, intelligent experiences.',
     siteName: 'VectraDocs',
