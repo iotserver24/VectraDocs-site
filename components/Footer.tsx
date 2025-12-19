@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Github } from 'lucide-react';
 
 export function Footer() {
@@ -9,7 +10,10 @@ export function Footer() {
 
                     {/* Column 1: Brand */}
                     <div className="col-span-2 md:col-span-1">
-                        <h3 className="text-lg font-bold text-white mb-3">VectraDocs</h3>
+                        <Link href="/" className="flex items-center gap-2 mb-3">
+                            <Image src="/logo.jpg" alt="VectraDocs" width={24} height={24} className="rounded-md" />
+                            <span className="text-lg font-bold text-white">VectraDocs</span>
+                        </Link>
                         <p className="text-sm text-zinc-400 leading-relaxed">
                             AI-powered documentation that chats back. Open source & free.
                         </p>
