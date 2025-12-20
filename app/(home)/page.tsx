@@ -308,12 +308,13 @@ export default function HomePage() {
       {/* 1. Hero Section */}
       <div
         ref={heroRef}
-        className="relative w-full max-w-7xl mx-auto px-4 pt-24 pb-20 md:pt-36 md:pb-32 flex flex-col items-center text-center z-10"
+        className="relative w-full max-w-7xl mx-auto px-4 pt-20 pb-16 md:pt-24 md:pb-24 flex flex-col items-center text-center z-10"
       >
         <FloatingOrbs />
 
         {/* VectraDocs Logo */}
-        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        {/* VectraDocs Logo */}
+        <div className="mb-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <span className="text-2xl md:text-3xl font-bold tracking-tight">
             <span className="text-white">Vectra</span>
             <span className="text-orange-500">Docs</span>
@@ -322,7 +323,7 @@ export default function HomePage() {
 
         {/* Badge: Credits - Animated entrance */}
         <div
-          className="mb-10 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-[12px] font-mono text-zinc-400 backdrop-blur-sm animate-fade-in-up animate-border-dance"
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-[12px] font-mono text-zinc-400 backdrop-blur-sm animate-fade-in-up animate-border-dance"
           style={{ animationDelay: '0.2s' }}
         >
           <Terminal className="w-4 h-4 text-orange-500 animate-pulse" />
@@ -332,7 +333,7 @@ export default function HomePage() {
 
         {/* Headline with parallax */}
         <h1
-          className="text-5xl md:text-8xl font-bold tracking-tight mb-8 animate-fade-in-up"
+          className="text-5xl md:text-8xl font-bold tracking-tight mb-6 animate-fade-in-up"
           style={{
             animationDelay: '0.4s',
             transform: `translate(${mousePos.x}px, ${mousePos.y}px)`,
@@ -351,7 +352,7 @@ export default function HomePage() {
 
         {/* Subheadline */}
         <p
-          className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in-up opacity-0"
+          className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-in-up opacity-0"
           style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
         >
           Add <span className="text-gradient-animate font-semibold">AI-powered chat</span> to your documentation in minutes.
@@ -381,6 +382,26 @@ export default function HomePage() {
           >
             <Github className="w-5 h-5 group-hover:rotate-12 transition-transform" />
             <span>Star on GitHub</span>
+          </a>
+        </div>
+
+        {/* Product Hunt Badge */}
+        <div
+          className="mt-8 animate-fade-in-up opacity-0"
+          style={{ animationDelay: '1.0s', animationFillMode: 'forwards' }}
+        >
+          <a
+            href="https://www.producthunt.com/products/vectra-docs?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-vectra-docs"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1052403&theme=light&t=1766239122241"
+              alt="Vectra Docs - alternative of mintlify where Documentations that Chats Back | Product Hunt"
+              width="250"
+              height="54"
+              className="w-[250px] h-[54px]"
+            />
           </a>
         </div>
       </div>

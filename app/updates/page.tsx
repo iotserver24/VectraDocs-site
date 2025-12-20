@@ -1,10 +1,33 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Package, Zap, Code2, Github, ExternalLink, Calendar, Tag, History } from 'lucide-react';
+import { ArrowLeft, Sparkles, Package, Zap, Code2, Github, ExternalLink, Calendar, Tag, History, Rocket } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const updates = [
+    {
+        version: '1.0.0-1',
+        date: 'December 21, 2025',
+        tag: 'Featured',
+        tagColor: 'bg-orange-500 text-white',
+        title: 'Product Hunt Launch 🚀',
+        description: 'VectraDocs is now live on Product Hunt! We are excited to share our AI-powered documentation tool with the community.',
+        features: [
+            {
+                icon: Rocket,
+                title: 'Official Launch',
+                description: 'We are featured! Check out our launch page, leave a comment, and support the project.',
+            },
+        ],
+        packages: [
+            { name: 'Product Hunt', version: 'Live', npm: 'https://www.producthunt.com/products/vectra-docs' },
+        ],
+        highlights: [
+            'Featured on Product Hunt',
+            'Community Release',
+            'New Home Page Badge',
+        ],
+    },
     {
         version: '1.0.0',
         date: 'December 14, 2025',
