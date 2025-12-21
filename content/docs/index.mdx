@@ -5,7 +5,7 @@ description: Welcome to the Ultimate AI-Powered Documentation Starter
 
 # VectraDocs
 
-**VectraDocs** is a next-generation, **open-source** documentation starter kit designed to provide a premium, AI-native experience out of the box. Built on top of **Next.js 16**, **Fumadocs**, **LangChain**, and **Orama**, it combines a beautiful UI with powerful client-side RAG (Retrieval-Augmented Generation) search.
+**VectraDocs** is a next-generation, **open-source** documentation starter kit designed to provide a premium, AI-native experience out of the box. Built on top of **Next.js 16**, **Fumadocs**, and **Orama**, it combines a beautiful UI with powerful client-side RAG (Retrieval-Augmented Generation) search.
 
 <Callout title="100% Open Source" type="info">
 All VectraDocs components are free and open source under the MIT license.
@@ -61,7 +61,7 @@ VectraDocs uses a **Retrieval-Augmented Generation (RAG)** approach:
 1.  **Ingestion (`scripts/build-index.mjs`)**: Scans your `.mdx` files at build time and creates a search index.
 2.  **Storage**: The index is saved as a JSON file in `public/search-index.json`.
 3.  **Retrieval (`app/api/chat/route.ts`)**: When a user asks a question, the API loads the index, finds relevant docs, and feeds them to the LLM.
-4.  **Generation**: The LLM (via LangChain) generates a streaming response based *only* on your documentation.
+4.  **Generation**: The LLM generates a streaming response based *only* on your documentation.
 
 This approach ensures the AI only answers based on YOUR content, reducing hallucinations.
 

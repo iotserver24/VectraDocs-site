@@ -6,6 +6,33 @@ import { useEffect, useRef, useState } from 'react';
 
 const updates = [
     {
+        version: '1.0.2',
+        date: 'December 21, 2025',
+        tag: 'Latest',
+        tagColor: 'bg-orange-500/20 text-orange-400',
+        title: 'Performance & Transparency Update ⚡',
+        description: 'Faster AI responses and improved transparency showing what data is being used.',
+        features: [
+            {
+                icon: Zap,
+                title: 'Removed LangChain',
+                description: 'Direct API calls for faster response times (~200-500ms improvement)',
+            },
+            {
+                icon: Sparkles,
+                title: 'Source References Display',
+                description: 'Shows "Referring → Page Name" for each document used by AI',
+            },
+        ],
+        packages: [],
+        highlights: [
+            'Faster AI response streaming',
+            'Transparent source references in chat',
+            'Reduced dependencies',
+            'Pre-warmed Orama DB on startup',
+        ],
+    },
+    {
         version: '1.0.0-1',
         date: 'December 21, 2025',
         tag: 'Featured',
@@ -83,7 +110,7 @@ const updates = [
             {
                 icon: Sparkles,
                 title: 'AI Chat with RAG',
-                description: 'Context-aware AI assistant powered by Orama and LangChain',
+                description: 'Context-aware AI assistant powered by Orama (LangChain removed in v1.0.2)',
             },
             {
                 icon: History,

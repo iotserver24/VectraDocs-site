@@ -5,7 +5,7 @@ description: Customize the RAG pipeline, system prompts, search settings, and UI
 
 # AI Configuration
 
-This page covers how to customize the AI behavior in **VectraDocs**. The AI is built on **LangChain** and uses **Orama** for client-side vector search.
+This page covers how to customize the AI behavior in **VectraDocs**. The AI uses direct OpenAI-compatible API calls and **Orama** for client-side vector search.
 
 {/* AI Context: This page covers AI customization for the main VectraDocs Next.js starter. It explains how to modify the system prompt, adjust search settings, change LLM providers, and customize the chat UI. */}
 
@@ -24,7 +24,7 @@ VectraDocs uses **Retrieval-Augmented Generation (RAG)**:
 1. **User asks a question** → The frontend sends the message to `/api/chat`
 2. **Search relevant docs** → Orama searches the documentation index
 3. **Build context** → The top results are combined into a context string
-4. **Generate response** → LangChain sends the question + context to the LLM
+4. **Generate response** → Direct API call sends the question + context to the LLM
 5. **Stream response** → The AI's answer is streamed back to the user
 
 {/* AI Context: VectraDocs uses RAG (Retrieval-Augmented Generation). The Orama search index is built at build time from MDX files. At runtime, user questions trigger a search, and the top results are injected into the LLM prompt as context. */}
@@ -35,37 +35,19 @@ VectraDocs uses **Retrieval-Augmented Generation (RAG)**:
 
 The AI's "personality" is defined in `app/api/chat/route.ts`.
 
-Find the `ChatPromptTemplate`:
+Find the `systemPrompt` variable:
 
 ```typescript
-const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `You are a helpful documentation assistant for "VectraDocs".
-    Answer questions based ONLY on the provided documentation context.
-    
-    Context:
-    {context}
-    
-    IMPORTANT RULES:
-    1. Only answer based on the provided context
-    2. If the answer is not in the context, apologize and say you don't have information
-    3. Be concise but helpful
-    4. Include code examples when relevant
-    5. At the END of your response, ALWAYS include a "📚 References" section
-    6. Use the EXACT URLs from the context (relative paths like /docs/installation)
-    7. Format references as markdown links: [Page Title](/docs/page-path)
-    
-    Example reference section:
-    
-    📚 **References:**
-    - [Installation Guide](/docs/installation)
-    - [Backend Setup](/docs/backend-setup)`],
-    new MessagesPlaceholder("history"),
-    ["human", "{input}"],
-]);
+const systemPrompt = `You are a docs assistant. Answer using ONLY the context below. Be concise.
+
+Context:
+${context}
+
+Rules: If info not in context, say so. Add 📚 References section with markdown links at end.`;
 ```
 
-<Callout title="Automatic References" type="info">
-The AI automatically includes documentation references at the end of each response. URLs are **relative paths** (like `/docs/installation`) so they work on any domain.
+<Callout title="Optimized for Speed" type="info">
+As of v1.0.2, VectraDocs uses direct API calls instead of LangChain for ~200-500ms faster responses.
 </Callout>
 
 ### Customization Ideas
